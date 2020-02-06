@@ -7,19 +7,18 @@
         </div>
         
         <div class="container mt-4 head">
-          <center><h3><img src="m3.png" alt="" srcset="" width="100" height="100"> <br> Welcome, it's {{date()}}</h3></center>    
-        <div class="row">
-            <div class="col-sm-2 ">
-                
-                   
-                    <form >
+          <center><h3><img src="m3.png" alt="" srcset="" width="100" height="100"> <br> Welcome, it's {{date()}}</h3>    
+        
+        
+            <div class="col-sm-5">
+                  <form >
   
             <div class="form-group">
                 <label>Project/Task:</label>
                 <input type="text"  class="form-control" v-model="newTodo.project">
             </div>
 
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <label>Categories:</label>
                 <select class="form-control" v-model="newTodo.categories">
                 <option disable selected>Please choose</option>
@@ -29,7 +28,7 @@
                 <option value="Career">Career</option>
 
                 </select>
-            </div>
+            </div> -->
 
              <div class="form-group">
                 <label>Priority:</label>
@@ -51,6 +50,7 @@
 
             <div class="form-group">
                 <label>Date:</label>
+                <!-- <input type="date" name="date" id="date" class="form-control" v-model="newTodo.date"> -->
                 <input type="text"  class="form-control" v-model="newTodo.date">
             </div>
 
@@ -59,26 +59,28 @@
                 <input type="text"  class="form-control" v-model="newTodo.time">
             </div>
 
-                     <button v-if="update" class="btn btn-success btn-sm" type="submit" @click.prevent="addUser"> Add To-do 
+                     <button v-if="status" class="btn btn-success btn-lg" type="submit" @click.prevent="addUser"> 
                          <img src="@/assets/icons/plus.svg" alt="e" width="50" height="30" title="" ></button>
-                         <button v-else class="btn btn-dark btn-sm" type="click" @click.prevent="updateUser(index)">Update</button>
-                    <button class="btn btn-secondary ml-2 mt-1 btn-sm" type="reset"> Reset</button>
+                         <button v-if ="secondStatus" class="btn btn-dark btn-lg" type="click" @click.prevent="updateUser">Update</button>
+                    <button class="btn btn-secondary ml-2 mt-1 btn-lg" type="reset"> Reset</button>
+                    
             
           </form>  
+            </div>
+          
+            
 
            
 
+            <div class="col-sm-10 mt-5">
 
-            </div>
-
-            <div class="col-sm-10 mt-3">
-                
-<table class="table border">
+              <div class="table-responsive">
+                  <table class="table border">
                       <thead>
                         <tr>
                           <th>S/N</th>
                           <th>Todo</th>
-                          <th>Categories</th>
+                          <!-- <th>Categories</th> -->
                           <th>Priority</th>
                           <th>Description</th>
                           <th>Date</th>
@@ -93,14 +95,14 @@
                             
                           <td>{{index + 1}}</td>   
                           <td>{{todo.project}}</td>
-                          <td>{{todo.categories}}</td>
+                          <!-- <td>{{todo.categories}}</td> -->
                           <td>{{todo.priority}}</td>
                           <td>{{todo.description}}</td>
                           <td>{{todo.date}}</td>
                           <td>{{todo.time}}</td>
                           <td>
                              
-                              <button v-if="status" class="btn btn-success btn-sm">
+                              <button v-if="update" class="btn btn-success btn-sm">
                                   Completed
                                 </button>
                                 <button v-else class="btn btn-danger btn-sm" >
@@ -110,7 +112,7 @@
                                   
                               <div class="form-check">
                                 <label class="form-check-label">
-                                    <input type="checkbox" class="form-check-input" value=""  @click="toggleOn(index)">
+                                    <input type="checkbox" class="form-check-input" value=""  @click="toggleOn(todo)">
                                 </label>
                                 </div> </center><br>
                                
@@ -132,10 +134,12 @@
                   
 
 </table>
-            </div>
+                  </div>  
+
+            </div> </center>
         </div>
      
-        </div>
+        
     </div>
 </template>
 
@@ -147,15 +151,16 @@ export default {
     data(){
 
         return{
-        status : false,
-        update : true,
+        status : true,
+        update : null,
+        secondStatus : false,
         todos: [
           {
             project: "Travel",
             categories: "Personal",
             priority : "High Priority",
             description : 'Flight to Lagos',
-            date : "12-03-12",
+            date : "12/03/2020",
             time : "11:00am"
           },
          ],
@@ -167,13 +172,17 @@ export default {
             description : '',
             date : "",
             time : ""
-         }
+         },
+         myTodoUpdate : null,
+         editArea : null,
         }
     },
     methods : {
         addUser(){
-            if (this.newTodo.project === '' || this.newTodo.categories === '' 
-      || this.newTodo.priority === '' || this.newTodo.description === '' 
+            if (this.newTodo.project === '' 
+    //         || this.newTodo.categories === '' 
+    //   || this.newTodo.priority === '' 
+      || this.newTodo.description === '' 
       || this.newTodo.date === '' || this.newTodo.time === '') {
         swal("hoops!", "No Todo to add!", "warning");
       }
@@ -206,18 +215,29 @@ export default {
             
         },
     
-    toggleOn(index){
-        this.status = !this.status
+    toggleOn(){
+        this.update = !this.update
+        // this.newTodo = this.todo.indexOf(index)
         
     },
 
     editUser(id){
-        this.update = !this.update
-        this.newTodo = id
+        this.status = false;
+        this.secondStatus = true;
+        this.newTodo = id;
+        this.myTodoUpdate = this.todo.indexOf(id)
+        this.todo[this.myTodoUpdate] = this.newTodo
     },
 
-    updateUser(index){
-        this.todos.push(index)
+    updateUser(){
+        this.secondStatus = false;
+        this.status = true;
+        this.newTodo = {}
+         swal("Successful! ", "To-do updated!", "success")
+    },
+
+    resetUser(){
+
     },
 
      date(){
@@ -230,17 +250,7 @@ export default {
     }
 
 }
-    // methods : {
-    //      date(){
-    //     let today 
-    //     let dd = String(today.getDate()).padStart(2, '0');
-    //     let mm = String(today.getmonth() + 1).padStart(2, '0');
-    //     let yyyy= today.getFullYear();
 
-    //     today = mm + '/' + dd + '/' + yyyy;
-    //     return today
-    // }
-    
    
     
 
